@@ -119,63 +119,52 @@ void program95()
 
 void gauss(double **mas, double **masr, int n)
 {
-    int ind, k = 0;
-    int i,j;
-
+    int k = 0, ind;
     while (k < n)
     {
-        double temp = mas[k][k];
-        if(temp == 0)
-
-         {
-            for(i = 0; i < n; i++)
-
+        double t = mas[k][k];
+        if(t == 0)
+        {
+            for(int i = 0; i < n; i++)
                 if(mas[i][k] != 0)
-                 {
+                {
                     ind = i;
                     break;
-                 }
-
-            for(i = 0; i < n; i++)
-
-             {
+                }
+            for(int i = 0; i < n; i++)
+            {
                 double t = mas[k][i], t1 = masr[k][i];
                 mas[k][i] = mas[ind][i], masr[k][i] = masr[ind][i];
                 mas[ind][i] = t, masr[ind][i] = t1;
-             }
-
-            temp = mas[k][k];
-         }
-
+            }
+            t = mas[k][k];
+        }
         for (int i = 0; i < n; i++)
-         {
-            mas[k][i] = mas[k][i]/temp;
-            masr[k][i] = masr[k][i]/temp;
-         }
-        for (i = k + 1; i < n; i++)
-
         {
-            double temp = mas[i][k];
-            for (j = 0; j < n; j++)
+            mas[k][i] /= t;
+            masr[k][i] /= t;
+        }
+        for (int i = k + 1; i < n; i++)
+        {
+            double t = mas[i][k];
+            for (int j = 0; j < n; j++)
             {
-                mas[i][j] = mas[i][j] - mas[k][j] * temp;
-                masr[i][j] = mas[i][j] - masr[k][j] * temp;
+                mas[i][j] -= mas[k][j] * t;
+                masr[i][j] -= masr[k][j] * t;
             }
         }
         k++;
     }
-
     for (k = n - 1; k > 0; k--)
     {
-        for(j = k - 1; j >= 0; j--)
+        for(int j = k - 1; j >= 0; j--)
         {
-            double temp = mas[j][k];
-            mas[j][k] = mas[j][k] - (mas[k][k] * temp);
-
-            for(i = n-1; i >= 0; i--)
-             {
-                masr[j][i] = masr[j][i] - (masr[k][i] * temp);
-             }
+            double t = mas[j][k];
+            mas[j][k] -= mas[k][k] * t;
+            for(int i = n-1; i >= 0; i--)
+            {
+                masr[j][i] -= masr[k][i] * t;
+            }
         }
     }
 }
@@ -183,26 +172,25 @@ void program96()
 {
     setlocale(LC_ALL, "Rus");
     int n;
+    double **mas, **masr, **copy_m;
 
-    printf("¬ведите размерность матрицы: ");
+    printf("¬ведите размерность матрицы m*m: ");
     scanf("%d", &n);
-
-    double **mas, **masr, **copy;
 
     mas = (double**) malloc(n*sizeof(double*));
     masr = (double**) malloc(n*sizeof(double*));
-    copy = (double**) malloc(n*sizeof(double*));
+    copy_m = (double**) malloc(n*sizeof(double*));
 
-    for (int i = 0; i < n; ++i)
-    {
-        mas[i]=(double*) malloc(n*sizeof(double));
-        masr[i]=(double*) malloc(n*sizeof(double));
-        copy[i]=(double*) malloc(n*sizeof(double));
+
+    for (int i = 0; i < n; ++i){
+        mas[i] = (double*) malloc(n*sizeof(double));
+        masr[i] = (double*) malloc(n*sizeof(double));
+        copy_m[i] = (double*) malloc(n*sizeof(double));
     }
-
     printf("¬ведите саму матрицу: \n");
 
     for (int i = 0; i < n; i++)
+
         for (int j = 0; j < n; j++)
 
         {
@@ -211,53 +199,48 @@ void program96()
                   else masr[i][j] = 0;
 
             scanf("%lf", &mas[i][j]);
-             copy[i][j] = mas[i][j];
+            copy_m[i][j] = mas[i][j];
         }
 
     gauss(mas, masr, n);
-
     printf("\nќбратна€ матрица: \n");
 
-    for(int i = 0; i < n; i++)
-
-     {
+     for(int i = 0; i < n; i++)
+      {
         for(int j = 0; j < n; j++)
-
             printf("%lf ", masr[i][j]);
-
         printf("\n");
-     }
+      }
 
     double **c = (double**) malloc(n*sizeof(double*));
 
     for (int i = 0; i < n; i++)
     {
         c[i] = (double*) malloc(n*sizeof(double));
+
         for (int j = 0; j < n; j++)
 
         {
             c[i][j] = 0;
 
             for (int k = 0; k < n; k++)
-                c[i][j] = c[i][j] + (copy[i][k] * masr[k][j]);
+                c[i][j] += copy_m[i][k] * masr[k][j];
+
             if (fabs(c[i][j]) < 0.000001)
                 c[i][j] = 0;
         }
 
     }
     printf("\n–езультат перемножени€ матриц: \n");
-
     for(int i = 0; i < n; i++)
-
     {
         for(int j=0; j<n; j++)
-
-         {
+        {
             printf("%lf ", c[i][j]);
-         }
-
+        }
         printf("\n");
     }
+
 }
 
 int main()
